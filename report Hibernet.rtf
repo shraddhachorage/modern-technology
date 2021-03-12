@@ -1,0 +1,185 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Times New Roman;}{\f1\fnil\fcharset1 Cambria Math;}{\f2\fnil\fcharset0 Cambria Math;}{\f3\fnil\fcharset2 Symbol;}}
+{\colortbl ;\red0\green0\blue255;}
+{\*\generator Riched20 10.0.10240}{\*\mmathPr\mmathFont1\mwrapIndent1440 }\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\qc\f0\fs56\lang9 Hibernet\par
+
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1\qj\b\fs32 What is session and type of session?\par
+
+\pard\sa200\sl276\slmult1\qj       1 )what is session -\par
+\b0\fs22              \fs28 A Session is used to get a physical connection with a database. The Session object is lightweight and designed to be instantiated each time an interaction is needed with the database. Persistent objects are saved and retrieved through a Session object.\par
+The session objects should not be kept open for a long time because they are not usually thread safe and they should be created and destroyed them as needed. The main function of the Session is to offer, create, read, and delete operations for instances of mapped entity classes.\par
+      \b\fs32 2)State of session -\b0\fs28\par
+        a) \b Transient\b0  \f1\u8722?\f0  A new instance of a persistent class, which is not associated with a Session and has no representation in the database and no identifier value is considered transient by Hibernate.\par
+        b)\b Persistent\b0  \f1\u8722?\f0  You can make a transient instance persistent by associating it with a Session. A persistent instance has a representation in the database, an identifier value and is associated with a Session.\par
+        c)\b Detached\b0  \f1\u8722?\f0  Once we close the Hibernate Session, the persistent instance will become a detached instance.\par
+\par
+
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1\qj\b\fs32 How we can write hibernate program in java ?\b0\fs28\par
+
+\pard\sa200\sl276\slmult1\qj Web Application with Hibernate (using XML)\par
+\b\f2\fs32 index.jsp\par
+\b0\f0\fs28 This page gets input from the user and sends it to the register.jsp file using post method.\par
+\b Code :-\b0\par
+<form action="register.jsp" method="post">  \par
+Name:<input type="text" name="name"/><br><br/>  \par
+Password:<input type="password" name="password"/><br><br/>  \par
+Email ID:<input type="text" name="email"/><br><br/>  \par
+<input type="submit" value="register"/>"  \par
+</form>  \par
+\b\f2\fs32 register.jsp\par
+\b0\f0\fs28 This file gets all request parameters and stores this information into an object of User class. Further, it calls the register method of UserDao class passing the User class object.\par
+\b code :-\f2\fs32\par
+\b0\f0\fs28 <%@page import="com.javatpoint.mypack.UserDao"%>  \par
+<jsp:useBeanid="obj"class="com.javatpoint.mypack.User">  \par
+</jsp:useBean>  \par
+<jsp:setProperty property="*" name="obj"/>  \par
+<%  \par
+int i=UserDao.register(obj);  \par
+if(i>0)  \par
+out.print("You are successfully registered");  \par
+%>  \b\f2\fs32  \par
+User.java\par
+\b0\f0\fs28 It is the simple bean class representing the Persistent class in hibernate.\par
+\b code :-\f2\fs32\par
+\b0\f0\fs28 package com.javatpoint.mypack;  \par
+public class User \{  \par
+private int id;  \par
+private String name,password,email;  \par
+//getters and setters  \par
+\}  \par
+\b\f2\fs32 user.hbm.xml\par
+\b0\f0\fs28 It maps the User class with the table of the database.\par
+\b code :-\f2\fs32\par
+\b0\f0\fs28 <?xml version='1.0' encoding='UTF-8'?>  \par
+<!DOCTYPE hibernate-mapping PUBLIC  \par
+ "-//Hibernate/Hibernate Mapping DTD 5.3//EN"  \par
+ "{{\field{\*\fldinst{HYPERLINK http://hibernate.sourceforge.net/hibernate-mapping-5.3.dtd }}{\fldrslt{http://hibernate.sourceforge.net/hibernate-mapping-5.3.dtd\ul0\cf0}}}}\f0\fs28 ">  \par
+ <hibernate-mapping>  \par
+ <class name="com.javatpoint.mypack.User" table="u400">  \par
+ <id name="id">  \par
+ <generator class="increment"></generator>  \par
+ </id>  \par
+ <property name="name"></property>  \par
+ <property name="password"></property>  \par
+ <property name="email"></property>  \par
+ </class>         \par
+ </hibernate-mapping>  \b\f2\fs32\par
+UserDao.java\par
+\b0\f0\fs28 A Dao class, containing method to store the instance of User class\b\f2\fs32 .\par
+code :-\par
+\b0\f0\fs28 package com.javatpoint.mypack;    \par
+import org.hibernate.Session;  \par
+import org.hibernate.SessionFactory;  \par
+import org.hibernate.Transaction;  \par
+import org.hibernate.boot.Metadata;  \par
+import org.hibernate.boot.MetadataSources;  \par
+import org.hibernate.boot.registry.StandardServiceRegistry;  \par
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;  \par
+public class UserDao \{        \par
+public static int register(User u)\{    \par
+ int i=0;    \par
+ StandardServiceRegistry ssr = new StandardServiceRegistryBuilder().configure("hibernate.cfg.xml").build();  \par
+ Metadata meta = new MetadataSources(ssr).getMetadataBuilder().build();  \par
+SessionFactory factory = meta.getSessionFactoryBuilder().build();  \par
+Session session = factory.openSession();  \par
+Transaction t = session.beginTransaction();   \par
+i=(Integer)session.save(u);    \par
+t.commit();    \par
+session.close();      \par
+return i;     \par
+ \}    \par
+\}    \par
+\b\f2\fs32 hibernate.cfg.xml\par
+\b0\f0\fs28 It is a configuration file, containing informations about the database and mapping file.\par
+\b\f2\fs32 code :-\par
+\b0\f0\fs28 <?xml version='1.0' encoding='UTF-8'?>  \par
+<!DOCTYPE hibernate-configuration PUBLIC  \par
+          "-//Hibernate/Hibernate Configuration DTD 5.3//EN"  \par
+          "{{\field{\*\fldinst{HYPERLINK http://hibernate.sourceforge.net/hibernate-configuration-5.3.dtd }}{\fldrslt{http://hibernate.sourceforge.net/hibernate-configuration-5.3.dtd\ul0\cf0}}}}\f0\fs28 ">  \par
+<hibernate-configuration>  \par
+<session-factory>  \par
+ <property name="hbm2ddl.auto">create</property>  \par
+ <property name="dialect">org.hibernate.dialect.Oracle9Dialect</property>  \par
+ <property name="connection.url">jdbc:oracle:thin:@localhost:1521:xe</property>  \par
+ <property name="connection.username">system</property>  \par
+ <property name="connection.password">jtp</property>  \par
+ <propertyname="connection.driver_class">oracle.jdbc.driver.OracleDriver</property>  \par
+ <mapping resource="user.hbm.xml"/>  \par
+ </session-factory>  \par
+</hibernate-configuration>  \b\f2\fs32\par
+\b0\f0\fs28\par
+
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1\qj\b\fs32 Annotations supported by hibernet and it uses ?\fs28\lang9\par
+
+\pard\sa200\sl276\slmult1\qj\fs32       a) \fs28 @Entity Annotation -\par
+\b0 The EJB 3 standard annotations are contained in the javax.persistence package, so we import this package as the first step. Second, we used the @Entity annotation to the Employee class, which marks this class as an entity bean, so it must have a no-argument constructor that is visible with at least protected scope.\b\par
+      b) @Table Annotation -\par
+\b0 The @Table annotation allows you to specify the details of the table that will be used to persist the entity in the database. The @Table annotation provides four attributes, allowing you to override the name of the table, its catalogue, and its schema, and enforce unique constraints on columns in the table. For now, we are using just table name, which is EMPLOYEE.\b\par
+     c) @Id and @GeneratedValue Annotations -\par
+\b0 Each entity bean will have a primary key, which you annotate on the class with the @Id annotation. The primary key can be a single field or a combination of multiple fields depending on your table structure.\par
+By default, the @Id annotation will automatically determine the most appropriate primary key generation strategy to be used but you can override this by applying the @GeneratedValue annotation, which takes two parameters strategy and generator that I'm not going to discuss here, so let us use only the default key generation strategy. Letting Hibernate determine which generator type to use makes your code portable between different databases.\b\par
+        d) @Column Annotation -\par
+\b0 The @Column annotation is used to specify the details of the column to which a field or property will be mapped. You can use column annotation with the following most commonly used attributes \f1\u8722?\f0\par
+
+\pard 
+{\pntext\f0 i.\tab}{\*\pn\pnlvlbody\pnf0\pnindent0\pnstart1\pnlcrm{\pntxta.}}
+\fi-360\li720\sa200\sl276\slmult1\qj\b name\b0  attribute permits the name of the column to be explicitly specified.\par
+{\pntext\f0 ii.\tab}\b length\b0  attribute permits the size of the column used to map a value particularly for a String value.\par
+{\pntext\f0 iii.\tab}\b nullable\b0  attribute permits the column to be marked NOT NULL when the schema is generated.\par
+{\pntext\f0 iv.\tab}\b unique\b0  attribute permits the column to be marked as containing only unique values.\lang9\par
+
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1\qj\b\fs32 How many files are requried ? importance of each file ? important point of each file ?\b0\fs28\par
+
+\pard\sa200\sl276\slmult1\qj          There are mainly six important tags or properties for hibernate configuration file. Hibernate configuration file naming convention is generally hibernate.cfg.xml and it is generally placed in the classpath.\par
+This can also be configured in the hibernate.properties file. If both hibernate.cfg.xml and hibernate.properties are found in the classpath then hibernate.cfg.xml overrides the hibernate.properties file.\par
+\b a) DTD :-\b0\par
+The is DTD and it is required for the data type definition.\par
+code :-\par
+<?xml versi encoding='utf-8'?>\par
+<!DOCTYPE hibernate-configuration PUBLIC\par
+"-//Hibernate/Hibernate Configuration DTD//EN"\par
+"{{\field{\*\fldinst{HYPERLINK http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd }}{\fldrslt{http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd\ul0\cf0}}}}\f0\fs28 ">\b\fs32\par
+\fs28 b) JDBC Configuration :-\fs32\par
+\b0\fs28 The database connection settings are configured into the XML file.\par
+code:-\par
+<property name="connection.driver_class">db_driver(com.mysql.jdbc.Driver/com.mysql.cj.jdbc.Driver)</property>\par
+<property name="connection.url">db_connection_url(jdbc:mysql://localhost:3306)/db_name</property>\par
+<property name="connection.username">db_username</property>\par
+<property name="connection.password">db_password</property>\par
+\b c) SQL Variant Generation :-\b0\par
+The dialect which is required to generate your appropriate query or HSQL query. This dialect is dependent on the database and you need to choose according to your database.\par
+code :-\par
+<property name="dialect">db_dialect(org.hibernate.dialect.MySQLDialect)</property>\par
+\b d) Connection Pool Size :-\par
+\b0 The connection pool size where a number of threads are available for connecting to the database whenever required.\par
+code :-\par
+<property name="hibernate.connection.pool_size">10</property>\par
+\b e) Auto-Generation of Schema :-\b0\par
+This property automatically drop the schema from the database if exists and create the schema in the database again on application startup.\par
+code :-\par
+<property name="hibernate.hbm2ddl.auto">create-drop</property>\par
+\b d) Mapping Files :-\par
+\b0 Mapping files are XML files which map the Java classes with the database tables.\par
+code :-\par
+<mapping resource="com/roytuts/domain/model/Department.hbm.xml"/>\par
+<mapping resource="com/roytuts/domain/model/Employee.hbm.xml"/>\par
+\b\fs32\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\b0\fs28\par
+\par
+}
+ 
